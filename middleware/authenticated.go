@@ -63,11 +63,11 @@ func Authenticated(next http.Handler) http.Handler {
 			util.Error(w, http.StatusUnauthorized, nil, "Invalid token: "+err.Error())
 			return
 		}
-		fmt.Printf("%+v\n", username)
+
 		user := &entity.User{
 			Username: username,
 		}
-		fmt.Printf("%+v\n", user)
+
 		ctx := context.WithValue(r.Context(), "user", user)
 		r = r.WithContext(ctx)
 
