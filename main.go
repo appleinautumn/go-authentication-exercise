@@ -5,13 +5,24 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+
+	AuthHandler "imp/assessment/auth/handler"
+	AuthService "imp/assessment/auth/service"
+	UserRepository "imp/assessment/user/repository"
 
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 
 	_ "github.com/lib/pq"
 )
 
 func main() {
+	//  load env
+	if err := godotenv.Load(); err != nil {
+		log.Println("Error loading .env file")
+	}
+
 	//  init database
 	connStr := "postgres://postgres:love@localhost/imp?sslmode=disable"
 	db, err := sql.Open("postgres", connStr)
@@ -22,10 +33,20 @@ func main() {
 	log.Printf("Database initialized.")
 	defer db.Close()
 
+	//  repo
+	userRepository := UserRepository.NewRepository(db)
+	authService := AuthService.NewService(userRepository)
+	authHandler := AuthHandler.NewAuthHandler(authService)
+
 	r := mux.NewRouter()
 	r.HandleFunc("/", rootEndpoint)
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(`:%s`, "8000"), r))
+	// auth endpoints
+	authRoutes := r.PathPrefix("/auth").Subrouter()
+	authRoutes.HandleFunc("/login", authHandler.Login).Methods("POST")
+	authRoutes.HandleFunc("/signup", authHandler.Signup).Methods("POST")
+
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(`:%s`, os.Getenv("APP_PORT")), r))
 }
 
 func rootEndpoint(w http.ResponseWriter, r *http.Request) {
