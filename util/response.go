@@ -8,7 +8,6 @@ import (
 func Success(w http.ResponseWriter, code int, data interface{}, message string) {
 	response, err := json.Marshal(map[string]interface{}{
 		"data":    data,
-		"success": true,
 		"message": message,
 	})
 	if err != nil {
@@ -25,7 +24,6 @@ func Error(w http.ResponseWriter, code int, data interface{}, message string) {
 	response, err := json.Marshal(map[string]interface{}{
 		"data":    data,
 		"message": message,
-		"success": false,
 	})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
