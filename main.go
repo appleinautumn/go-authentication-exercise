@@ -9,7 +9,10 @@ import (
 
 	AuthHandler "imp/assessment/auth/handler"
 	AuthService "imp/assessment/auth/service"
+	"imp/assessment/middleware"
+	UserHandler "imp/assessment/user/handler"
 	UserRepository "imp/assessment/user/repository"
+	UserService "imp/assessment/user/service"
 
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
@@ -35,6 +38,8 @@ func main() {
 
 	//  repo
 	userRepository := UserRepository.NewRepository(db)
+	userService := UserService.NewService(userRepository)
+	userHandler := UserHandler.NewUserHandler(userService)
 	authService := AuthService.NewService(userRepository)
 	authHandler := AuthHandler.NewAuthHandler(authService)
 
@@ -45,6 +50,12 @@ func main() {
 	authRoutes := r.PathPrefix("/auth").Subrouter()
 	authRoutes.HandleFunc("/login", authHandler.Login).Methods("POST")
 	authRoutes.HandleFunc("/signup", authHandler.Signup).Methods("POST")
+
+	// user endpoints
+	userRoutes := r.PathPrefix("/user").Subrouter()
+	userRoutes.Use(middleware.Authenticated)
+
+	userRoutes.HandleFunc("/list", userHandler.List).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(`:%s`, os.Getenv("APP_PORT")), r))
 }
