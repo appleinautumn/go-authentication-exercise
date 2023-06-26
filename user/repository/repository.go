@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"imp/assessment/user/entity"
+	"imp/assessment/util"
 )
 
 type userRepository struct {
@@ -20,13 +21,17 @@ func NewRepository(db *sql.DB) UserRepository {
 }
 
 func (r *userRepository) List(ctx context.Context) (res []*entity.User, err error) {
+	// get paging
+	paging := ctx.Value("paging").(*util.Paging)
+
+	// initial sql
 	start := "SELECT id, username, password, created_at, updated_at, deleted_at FROM users WHERE deleted_at IS NULL"
 
 	var sql strings.Builder
 	sql.WriteString(start)
 
 	// add limit and offset
-	sql.WriteString(fmt.Sprintf(` LIMIT %d OFFSET %d`, 10, 0))
+	sql.WriteString(fmt.Sprintf(` LIMIT %d OFFSET %d`, paging.Limit, paging.Offset))
 	rows, err := r.db.Query(sql.String())
 	if err != nil {
 		return nil, err
@@ -48,6 +53,19 @@ func (r *userRepository) List(ctx context.Context) (res []*entity.User, err erro
 	}
 
 	return res, nil
+}
+
+func (r *userRepository) Count(ctx context.Context) (int, error) {
+	// prepare sql
+	start := "SELECT COUNT(*) FROM users WHERE deleted_at IS NULL"
+
+	var sql strings.Builder
+	sql.WriteString(start)
+
+	var count int
+	r.db.QueryRow(sql.String()).Scan(&count)
+
+	return count, nil
 }
 
 func (r *userRepository) FindOneByUsername(ctx context.Context, username string) (res *entity.User, err error) {
