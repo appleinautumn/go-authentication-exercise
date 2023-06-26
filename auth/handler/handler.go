@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"imp/assessment/auth/request"
@@ -21,7 +20,29 @@ func NewAuthHandler(sv service.AuthService) AuthHandler {
 }
 
 func (h *authHandler) Login(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Login!")
+	ctx := r.Context()
+
+	// get payload
+	payload := &request.LoginRequest{}
+	if err := json.NewDecoder(r.Body).Decode(payload); err != nil {
+		util.Error(w, http.StatusBadRequest, nil, "Invalid request")
+		return
+	}
+
+	// validate
+	if errors := util.ValidateRequest(payload); len(errors) > 0 {
+		util.Error(w, http.StatusBadRequest, errors, "Validation error")
+		return
+	}
+
+	// login
+	accessToken, err := h.service.Login(ctx, payload.Username, payload.Password)
+	if err != nil {
+		util.Error(w, http.StatusBadRequest, err, err.Error())
+		return
+	}
+
+	util.Success(w, http.StatusOK, accessToken, "")
 }
 
 func (h *authHandler) Signup(w http.ResponseWriter, r *http.Request) {
@@ -43,7 +64,6 @@ func (h *authHandler) Signup(w http.ResponseWriter, r *http.Request) {
 	// register
 	user, err := h.service.Signup(ctx, payload.Username, payload.Fullname, payload.Password)
 	if err != nil {
-		fmt.Printf("%+v\n", err)
 		util.Error(w, http.StatusBadRequest, err, err.Error())
 		return
 	}
