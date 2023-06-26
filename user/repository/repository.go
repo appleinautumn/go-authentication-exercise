@@ -1,0 +1,61 @@
+package repository
+
+import (
+	"context"
+	"database/sql"
+
+	"imp/assessment/user/entity"
+)
+
+type userRepository struct {
+	db *sql.DB
+}
+
+func NewRepository(db *sql.DB) UserRepository {
+	return &userRepository{
+		db: db,
+	}
+}
+
+func (r *userRepository) FindOneByUsername(ctx context.Context, username string) (res *entity.User, err error) {
+	sql := "SELECT id, username, fullname, password, created_at, updated_at, deleted_at FROM users WHERE username = $1 AND deleted_at IS NULL"
+
+	row := r.db.QueryRow(sql, username)
+
+	user := entity.User{}
+
+	if err := row.Scan(
+		&user.Id,
+		&user.Username,
+		&user.Fullname,
+		&user.Password,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+		&user.DeletedAt); err != nil {
+
+		return nil, nil // no record
+	}
+
+	return &user, nil
+}
+
+func (r *userRepository) Create(ctx context.Context, m *entity.User) (res *entity.User, err error) {
+	sql := `INSERT INTO users (id, username, fullname, password)
+			VALUES ($1, $2, $3, $4)
+			RETURNING id, username, fullname, password, created_at, updated_at, deleted_at`
+
+	row := r.db.QueryRow(sql, m.Id, m.Username, m.Fullname, m.Password)
+
+	if err := row.Scan(
+		&m.Id,
+		&m.Username,
+		&m.Fullname,
+		&m.Password,
+		&m.CreatedAt,
+		&m.UpdatedAt,
+		&m.DeletedAt); err != nil {
+		return nil, err
+	}
+
+	return m, nil
+}
