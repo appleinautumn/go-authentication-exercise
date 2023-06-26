@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"encoding/json"
+	"context"
 	"net/http"
 
 	"imp/assessment/user/entity"
@@ -22,26 +22,34 @@ func NewUserHandler(sv service.UserService) UserHandler {
 }
 
 func (h *userHandler) List(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+	query := r.URL.Query()
 
+	// create paging object
+	page := query.Get("page")
+	limit := query.Get("limit")
+	paging := util.NewPaging(page, limit)
+
+	ctx := r.Context()
+	ctx = context.WithValue(ctx, "paging", paging)
+
+	// get users
 	users, err := h.service.List(ctx)
+
+	// get total users
+	count, err := h.service.Count(ctx)
+	if err != nil {
+		util.Error(w, http.StatusInternalServerError, nil, err.Error())
+		return
+	}
 
 	if err != nil {
 		util.Error(w, http.StatusInternalServerError, nil, err.Error())
 		return
 	}
 
-	response, err := json.Marshal(map[string]interface{}{
-		"data": listToResponse(users),
-	})
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	paginatedData := util.Paginate(paging, listToResponse(users), count)
 
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusAccepted)
-	w.Write(response)
+	util.Success(w, http.StatusOK, paginatedData, "")
 }
 
 func listToResponse(list []*entity.User) []map[string]interface{} {
