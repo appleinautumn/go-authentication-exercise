@@ -25,3 +25,12 @@ func (s *userService) List(ctx context.Context) ([]*entity.User, error) {
 
 	return users, nil
 }
+
+func (s *userService) Count(ctx context.Context) (int, error) {
+	count, err := s.repository.Count(ctx)
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}

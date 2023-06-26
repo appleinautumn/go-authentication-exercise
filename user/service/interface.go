@@ -7,4 +7,5 @@ import (
 
 type UserService interface {
 	List(ctx context.Context) ([]*entity.User, error)
+	Count(ctx context.Context) (int, error)
 }
