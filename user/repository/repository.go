@@ -3,6 +3,8 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"fmt"
+	"strings"
 
 	"imp/assessment/user/entity"
 )
@@ -15,6 +17,37 @@ func NewRepository(db *sql.DB) UserRepository {
 	return &userRepository{
 		db: db,
 	}
+}
+
+func (r *userRepository) List(ctx context.Context) (res []*entity.User, err error) {
+	start := "SELECT id, username, password, created_at, updated_at, deleted_at FROM users WHERE deleted_at IS NULL"
+
+	var sql strings.Builder
+	sql.WriteString(start)
+
+	// add limit and offset
+	sql.WriteString(fmt.Sprintf(` LIMIT %d OFFSET %d`, 10, 0))
+	rows, err := r.db.Query(sql.String())
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		var user entity.User
+		if err := rows.Scan(
+			&user.Id,
+			&user.Username,
+			&user.Password,
+			&user.CreatedAt,
+			&user.UpdatedAt,
+			&user.DeletedAt); err != nil {
+			return nil, err
+		}
+
+		res = append(res, &user)
+	}
+
+	return res, nil
 }
 
 func (r *userRepository) FindOneByUsername(ctx context.Context, username string) (res *entity.User, err error) {
