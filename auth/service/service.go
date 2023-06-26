@@ -3,10 +3,13 @@ package service
 import (
 	"context"
 	"errors"
+	"os"
+	"time"
 
 	"imp/assessment/user/entity"
 	"imp/assessment/user/repository"
 
+	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -54,7 +57,29 @@ func (s *authService) Signup(ctx context.Context, username string, fullname stri
 }
 
 func (s *authService) Login(ctx context.Context, username string, password string) (string, error) {
-	return "", nil
+	// get user
+	user, err := s.repository.FindOneByUsername(ctx, username)
+	if err != nil {
+		return "", err
+	}
+
+	if user == nil {
+		return "", errors.New("user doesn't exist")
+	}
+
+	// Simulate user login
+	loginSuccess := checkPasswordHash(password, user.Password)
+	if !loginSuccess {
+		return "", errors.New("invalid login")
+	}
+
+	// success, now generate the token
+	accessToken, err := generateJwtAccessToken(user.Username)
+	if err != nil {
+		return "", err
+	}
+
+	return accessToken, nil
 }
 
 // Function to hash the user's password
@@ -65,4 +90,32 @@ func hashPassword(password string) (string, error) {
 	}
 
 	return string(hashedPassword), nil
+}
+
+// Function to check if the provided password matches the hashed password
+func checkPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
+}
+
+func generateJwtAccessToken(username string) (string, error) {
+	secretKey := os.Getenv("JWT_SECRET_KEY")
+
+	expirationTime := time.Now().Add(24 * time.Hour)
+
+	claims := jwt.MapClaims{
+		"username": username,
+		"exp":      expirationTime.Unix(),
+	}
+
+	// Create the token
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	// Sign the token with the secret key
+	signedToken, err := token.SignedString([]byte(secretKey))
+	if err != nil {
+		return "", err
+	}
+
+	return signedToken, nil
 }
