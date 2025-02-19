@@ -1,6 +1,11 @@
 # IMP Assessment
 
-Just a simple service to test my Go understanding.
+A RESTful API service built with Go that provides user authentication and management. This project demonstrates clean architecture principles with a domain-driven design approach and includes:
+
+- User authentication (login/signup) with JWT token
+- User management with pagination support
+- Middleware for protected routes
+- PostgreSQL database integration
 
 ## Requirements
 
@@ -89,3 +94,14 @@ Run it
 ```bash
 ./imp
 ```
+
+## API Endpoints
+
+| Method | Endpoint     | Description                                     | Authentication |
+| ------ | ------------ | ----------------------------------------------- | -------------- |
+| GET    | /            | Root endpoint (health check)                    | No             |
+| POST   | /auth/signup | Create a new user account                       | No             |
+| POST   | /auth/login  | Authenticate and receive JWT token              | No             |
+| GET    | /user/list   | List users with pagination (page & limit query) | Yes (JWT)      |
+
+Example requests can be found in the `requests.http` file, which can be used with REST client extensions in various IDEs.
