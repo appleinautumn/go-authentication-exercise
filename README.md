@@ -105,3 +105,22 @@ Run it
 | GET    | /user/list   | List users with pagination (page & limit query) | Yes (JWT)      |
 
 Example requests can be found in the `requests.http` file, which can be used with REST client extensions in various IDEs.
+
+## Project Structure
+
+The codebase follows a domain-driven design with clear separation of concerns:
+
+```
+├── auth/               # Authentication domain
+│   ├── handler/        # HTTP request handlers
+│   ├── request/        # Request validation
+│   └── service/        # Business logic
+├── middleware/         # HTTP middleware components
+├── migrations/         # Database migrations
+├── user/               # User domain
+│   ├── entity/         # Data models
+│   ├── handler/        # HTTP request handlers
+│   ├── repository/     # Data access layer
+│   └── service/        # Business logic
+└── util/               # Shared utilities
+```
