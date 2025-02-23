@@ -1,4 +1,4 @@
-module imp/assessment
+module go-authentication-exercise
 
 go 1.20
 

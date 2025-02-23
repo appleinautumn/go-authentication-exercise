@@ -1,4 +1,4 @@
-# IMP Assessment
+# Go Authentication Exercise
 
 A RESTful API service built with Go that provides user authentication and management. This project demonstrates clean architecture principles with a domain-driven design approach and includes:
 
@@ -9,24 +9,23 @@ A RESTful API service built with Go that provides user authentication and manage
 
 ## Requirements
 
-This project is developed with:
+This project is tested with:
 
-- Go 1.20
-
-- Postgres 15
+- Go 1.22
+- Postgres 16
 
 ## Installation
 
 Clone the project
 
 ```bash
-git clone git@github.com:appleinautumn/imp-assessment.git
+git clone git@github.com:appleinautumn/go-authentication-exercise.git
 ```
 
 Go to the project directory
 
 ```bash
-cd imp-assessment
+cd go-authentication-exercise
 ```
 
 This service contains a `.env.example` file that defines environment variables you need to set. Copy and set the variables to a new `.env` file.
@@ -43,7 +42,7 @@ go run main.go
 
 ## Database
 
-If you have not created the database for IMP Assessment, please create one before going to the next step.
+If you have not created the database, please create one before going to the next step.
 
 We're using [golang-migrate](https://github.com/golang-migrate/migrate) for the migration.
 
@@ -86,13 +85,13 @@ docker run -v "$(pwd)"/migrations:/migrations --network host migrate/migrate -pa
 Build the binary
 
 ```bash
-go build -o imp
+go build -o goauth
 ```
 
 Run it
 
 ```bash
-./imp
+./goauth
 ```
 
 ## API Endpoints
