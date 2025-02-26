@@ -7,12 +7,12 @@ import (
 	"net/http"
 	"os"
 
-	AuthHandler "imp/assessment/auth/handler"
-	AuthService "imp/assessment/auth/service"
-	"imp/assessment/middleware"
-	UserHandler "imp/assessment/user/handler"
-	UserRepository "imp/assessment/user/repository"
-	UserService "imp/assessment/user/service"
+	AuthHandler "go-authentication-exercise/auth/handler"
+	AuthService "go-authentication-exercise/auth/service"
+	"go-authentication-exercise/middleware"
+	UserHandler "go-authentication-exercise/user/handler"
+	UserRepository "go-authentication-exercise/user/repository"
+	UserService "go-authentication-exercise/user/service"
 
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
@@ -26,7 +26,7 @@ func main() {
 	}
 
 	//  init database
-	connStr := "postgres://postgres:love@localhost/imp?sslmode=disable"
+	connStr := "postgres://postgres:love@localhost/go_auth_db?sslmode=disable"
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatal(err)
@@ -60,5 +60,5 @@ func main() {
 }
 
 func rootEndpoint(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "imp-assessment")
+	fmt.Fprintf(w, "go-authentication-exercise")
 }

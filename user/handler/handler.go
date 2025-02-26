@@ -4,11 +4,11 @@ import (
 	"context"
 	"net/http"
 
-	"imp/assessment/user/entity"
-	"imp/assessment/util"
+	"go-authentication-exercise/user/entity"
+	"go-authentication-exercise/util"
 
-	// "imp/assessment/user/request"
-	"imp/assessment/user/service"
+	// "go-authentication-exercise/user/request"
+	"go-authentication-exercise/user/service"
 )
 
 type userHandler struct {

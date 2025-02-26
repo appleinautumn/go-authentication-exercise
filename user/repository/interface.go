@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"imp/assessment/user/entity"
+	"go-authentication-exercise/user/entity"
 )
 
 type UserRepository interface {

@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"strings"
 
-	"imp/assessment/user/entity"
-	"imp/assessment/util"
+	"go-authentication-exercise/user/entity"
+	"go-authentication-exercise/util"
 )
 
 type userRepository struct {

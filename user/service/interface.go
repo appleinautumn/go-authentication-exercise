@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	"imp/assessment/user/entity"
+	"go-authentication-exercise/user/entity"
 )
 
 type UserService interface {

@@ -8,8 +8,8 @@ import (
 	"os"
 	"strings"
 
-	"imp/assessment/user/entity"
-	"imp/assessment/util"
+	"go-authentication-exercise/user/entity"
+	"go-authentication-exercise/util"
 
 	"github.com/golang-jwt/jwt"
 )
