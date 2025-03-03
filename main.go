@@ -64,5 +64,9 @@ func main() {
 }
 
 func rootEndpoint(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "go-authentication-exercise")
+	version := os.Getenv("APP_VERSION")
+	if version == "" {
+		version = "0.1.0"
+	}
+	fmt.Fprintf(w, "go-authentication-exercise v%s", version)
 }
