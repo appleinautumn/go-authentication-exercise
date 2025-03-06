@@ -257,6 +257,25 @@ func TestAuthenticatedMiddleware(t *testing.T) {
 				Username: "testuser",
 			},
 		},
+		{
+			name: "Missing token",
+			setupRequest: func() *http.Request {
+				req := httptest.NewRequest("GET", "/user/list", nil)
+				return req
+			},
+			expectedStatus: http.StatusUnauthorized,
+			expectedUser:   nil,
+		},
+		{
+			name: "Invalid token",
+			setupRequest: func() *http.Request {
+				req := httptest.NewRequest("GET", "/user/list", nil)
+				req.Header.Set("Authorization", "Bearer invalid-token")
+				return req
+			},
+			expectedStatus: http.StatusUnauthorized,
+			expectedUser:   nil,
+		},
 	}
 
 	for _, tt := range tests {
