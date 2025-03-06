@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"go-authentication-exercise/user/entity"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -212,6 +213,86 @@ func TestGetUsernameFromJwt(t *testing.T) {
 			} else {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expectedResult, username)
+			}
+		})
+	}
+}
+
+func TestAuthenticatedMiddleware(t *testing.T) {
+	// Setup
+	originalSecret := os.Getenv("JWT_SECRET_KEY")
+	defer func() {
+		os.Setenv("JWT_SECRET_KEY", originalSecret)
+	}()
+
+	testSecret := "test-secret-key"
+	os.Setenv("JWT_SECRET_KEY", testSecret)
+
+	// Create a valid token
+	validClaims := jwt.MapClaims{
+		"username": "testuser",
+		"exp":      time.Now().Add(time.Hour).Unix(),
+	}
+	validToken := jwt.NewWithClaims(jwt.SigningMethodHS256, validClaims)
+	validTokenString, err := validToken.SignedString([]byte(testSecret))
+	if err != nil {
+		t.Fatalf("Error creating test token: %v", err)
+	}
+
+	tests := []struct {
+		name           string
+		setupRequest   func() *http.Request
+		expectedStatus int
+		expectedUser   *entity.User
+	}{
+		{
+			name: "Valid authentication",
+			setupRequest: func() *http.Request {
+				req := httptest.NewRequest("GET", "/user/list", nil)
+				req.Header.Set("Authorization", "Bearer "+validTokenString)
+				return req
+			},
+			expectedStatus: http.StatusOK,
+			expectedUser: &entity.User{
+				Username: "testuser",
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var capturedUser *entity.User
+			var handlerCalled bool
+
+			// Mock handler that will capture the user from context
+			nextHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				handlerCalled = true
+				userVal := r.Context().Value("user")
+				if userVal != nil {
+					capturedUser = userVal.(*entity.User)
+				}
+				w.WriteHeader(http.StatusOK)
+			})
+
+			// Create the middleware chain
+			middleware := Authenticated(nextHandler)
+
+			// Create a response recorder and request
+			recorder := httptest.NewRecorder()
+			req := tt.setupRequest()
+
+			// Call the middleware
+			middleware.ServeHTTP(recorder, req)
+
+			// Check results
+			assert.Equal(t, tt.expectedStatus, recorder.Code)
+
+			if tt.expectedUser != nil {
+				assert.True(t, handlerCalled, "Next handler should have been called")
+				assert.NotNil(t, capturedUser, "User should be in context")
+				assert.Equal(t, tt.expectedUser.Username, capturedUser.Username)
+			} else {
+				assert.False(t, handlerCalled, "Next handler should not have been called")
 			}
 		})
 	}
