@@ -161,3 +161,58 @@ func TestValidateToken(t *testing.T) {
 		})
 	}
 }
+
+func TestGetUsernameFromJwt(t *testing.T) {
+	tests := []struct {
+		name           string
+		claims         map[string]interface{}
+		expectedResult string
+		expectError    bool
+	}{
+		{
+			name: "Valid username",
+			claims: map[string]interface{}{
+				"username": "testuser",
+			},
+			expectedResult: "testuser",
+			expectError:    false,
+		},
+		{
+			name: "Missing username",
+			claims: map[string]interface{}{
+				"other": "value",
+			},
+			expectedResult: "",
+			expectError:    true,
+		},
+		{
+			name: "Empty username",
+			claims: map[string]interface{}{
+				"username": "",
+			},
+			expectedResult: "",
+			expectError:    true,
+		},
+		{
+			name: "Non-string username",
+			claims: map[string]interface{}{
+				"username": 123,
+			},
+			expectedResult: "",
+			expectError:    true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			username, err := getUsernameFromJwt(tt.claims)
+
+			if tt.expectError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.expectedResult, username)
+			}
+		})
+	}
+}
