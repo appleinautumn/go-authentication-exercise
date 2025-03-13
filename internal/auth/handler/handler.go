@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"go-authentication-exercise/auth/request"
-	"go-authentication-exercise/auth/service"
-	"go-authentication-exercise/util"
+	"go-authentication-exercise/internal/auth/request"
+	"go-authentication-exercise/internal/auth/service"
+	"go-authentication-exercise/internal/util"
 )
 
 type authHandler struct {

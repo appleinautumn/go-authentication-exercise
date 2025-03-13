@@ -6,8 +6,8 @@ import (
 	"os"
 	"time"
 
-	"go-authentication-exercise/user/entity"
-	"go-authentication-exercise/user/repository"
+	"go-authentication-exercise/internal/user/entity"
+	"go-authentication-exercise/internal/user/repository"
 
 	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"

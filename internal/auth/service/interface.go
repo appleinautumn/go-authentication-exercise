@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"go-authentication-exercise/user/entity"
+	"go-authentication-exercise/internal/user/entity"
 )
 
 type AuthService interface {
