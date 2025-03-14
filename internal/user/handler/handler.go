@@ -4,11 +4,11 @@ import (
 	"context"
 	"net/http"
 
-	"go-authentication-exercise/user/entity"
-	"go-authentication-exercise/util"
+	"go-authentication-exercise/internal/user/entity"
+	"go-authentication-exercise/internal/util"
 
-	// "go-authentication-exercise/user/request"
-	"go-authentication-exercise/user/service"
+	// "go-authentication-exercise/internal/user/request"
+	"go-authentication-exercise/internal/user/service"
 )
 
 type userHandler struct {
