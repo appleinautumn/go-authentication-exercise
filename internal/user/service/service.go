@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 
-	"go-authentication-exercise/user/entity"
-	"go-authentication-exercise/user/repository"
+	"go-authentication-exercise/internal/user/entity"
+	"go-authentication-exercise/internal/user/repository"
 )
 
 type userService struct {
