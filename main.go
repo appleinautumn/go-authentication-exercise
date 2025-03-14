@@ -7,12 +7,12 @@ import (
 	"net/http"
 	"os"
 
-	AuthHandler "go-authentication-exercise/auth/handler"
-	AuthService "go-authentication-exercise/auth/service"
-	"go-authentication-exercise/middleware"
-	UserHandler "go-authentication-exercise/user/handler"
-	UserRepository "go-authentication-exercise/user/repository"
-	UserService "go-authentication-exercise/user/service"
+	AuthHandler "go-authentication-exercise/internal/auth/handler"
+	AuthService "go-authentication-exercise/internal/auth/service"
+	"go-authentication-exercise/internal/middleware"
+	UserHandler "go-authentication-exercise/internal/user/handler"
+	UserRepository "go-authentication-exercise/internal/user/repository"
+	UserService "go-authentication-exercise/internal/user/service"
 
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
