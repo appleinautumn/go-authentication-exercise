@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"go-authentication-exercise/user/entity"
+	"go-authentication-exercise/internal/user/entity"
 	"net/http"
 	"net/http/httptest"
 	"os"
